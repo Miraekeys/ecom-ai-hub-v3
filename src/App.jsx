@@ -261,7 +261,7 @@ export default function App() {
         </div>
       </div>
     );
-  };
+  });
 
   const KanbanView = () => (
     <div>
@@ -386,7 +386,6 @@ export default function App() {
     </div>
   );
 
-  });
 
   const AgentProfileView = ({ agent }) => {
     const a = AGENTS[agent];

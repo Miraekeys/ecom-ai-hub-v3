@@ -1,4 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+const SUPABASE_URL = "https://vbgancolwwvfpbgrijmz.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZiZ2FuY29sd3d2ZnBiZ3Jpam16Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDA1NDQ3NiwiZXhwIjoyMDg5NjMwNDc2fQ.-zxiZvVwUpyMbiFpRkTZdXdhkMWUHPoFirkamEjRNGY";
+const SUPABASE_URL = 'https://https://vbgancolwwvfpbgrijmz.supabase.co  .supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZiZ2FuY29sd3d2ZnBiZ3Jpam16Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDA1NDQ3NiwiZXhwIjoyMDg5NjMwNDc2fQ.-zxiZvVwUpyMbiFpRkTZdXdhkMWUHPoFirkamEjRNGY  ';import { useState, useEffect, useRef } from "react";
 
 // ============================================================
 // CONFIGURATION — AGENTS ET COULEURS

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 const SUPABASE_URL = "https://vbgancolwwvfpbgrijmz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZiZ2FuY29sd3d2ZnBiZ3Jpam16Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDA1NDQ3NiwiZXhwIjoyMDg5NjMwNDc2fQ.-zxiZvVwUpyMbiFpRkTZdXdhkMWUHPoFirkamEjRNGY";
 
+
 // ============================================================
 // CONFIGURATION — AGENTS ET COULEURS
 // ============================================================
@@ -208,7 +209,8 @@ export default function App() {
     );
   };
 
-  const ChatWindow = React.memo(({ agent }) => {
+  const ChatWindow = ({ agent }) => {
+    const chatInputRef = useRef(null);
     const a = AGENTS[agent];
     const messages = chatMessages[agent] || [];
     const endRef = useRef(null);
@@ -235,12 +237,12 @@ export default function App() {
           <div ref={endRef} />
         </div>
         <div style={{ padding: "8px 10px", borderTop: "1px solid #F3F4F6", display: "flex", gap: "6px" }}>
-          <input defaultValue="" onChange={e => { chatInputs[agent] = e.target.value; }} onKeyDown={e => e.key === "Enter" && sendMessage(agent)} placeholder="Message..." style={{ flex: 1, padding: "7px 11px", borderRadius: "16px", border: `1px solid ${a.color}30`, fontSize: "13px", outline: "none", background: a.bg }} />
+          <input ref={chatInputRef} defaultValue="" onKeyDown={e => { if(e.key === "Enter") { setChatInputs(prev => ({...prev, [agent]: e.target.value})); sendMessage(agent); e.target.value=""; }}} placeholder="Message..." style={{ flex: 1, padding: "7px 11px", borderRadius: "16px", border: `1px solid ${a.color}30`, fontSize: "13px", outline: "none", background: a.bg }} />
           <button onClick={() => sendMessage(agent)} style={{ width: "32px", height: "32px", borderRadius: "50%", background: a.color, border: "none", color: "white", cursor: "pointer", fontSize: "14px" }}>→</button>
         </div>
       </div>
     );
-  });
+  };
 
   const KanbanView = () => (
     <div>

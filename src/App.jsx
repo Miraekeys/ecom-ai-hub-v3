@@ -235,7 +235,7 @@ export default function App() {
           <div ref={endRef} />
         </div>
         <div style={{ padding: "8px 10px", borderTop: "1px solid #F3F4F6", display: "flex", gap: "6px" }}>
-          <input value={chatInputs[agent] || ""} onChange={e => setChatInputs(prev => ({ ...prev, [agent]: e.target.value }))} onKeyDown={e => e.key === "Enter" && sendMessage(agent)} placeholder="Message..." style={{ flex: 1, padding: "7px 11px", borderRadius: "16px", border: `1px solid ${a.color}30`, fontSize: "13px", outline: "none", background: a.bg }} />
+          <input defaultValue="" onChange={e => { chatInputs[agent] = e.target.value; }} onKeyDown={e => e.key === "Enter" && sendMessage(agent)} placeholder="Message..." style={{ flex: 1, padding: "7px 11px", borderRadius: "16px", border: `1px solid ${a.color}30`, fontSize: "13px", outline: "none", background: a.bg }} />
           <button onClick={() => sendMessage(agent)} style={{ width: "32px", height: "32px", borderRadius: "50%", background: a.color, border: "none", color: "white", cursor: "pointer", fontSize: "14px" }}>→</button>
         </div>
       </div>

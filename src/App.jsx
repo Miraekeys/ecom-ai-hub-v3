@@ -208,7 +208,7 @@ export default function App() {
     );
   };
 
-  const ChatWindow = ({ agent }) => {
+  const ChatWindow = React.memo(({ agent }) => {
     const a = AGENTS[agent];
     const messages = chatMessages[agent] || [];
     const endRef = useRef(null);
@@ -240,7 +240,7 @@ export default function App() {
         </div>
       </div>
     );
-  };
+  });
 
   const KanbanView = () => (
     <div>

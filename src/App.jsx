@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 const SUPABASE_URL = "https://vbgancolwwvfpbgrijmz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZiZ2FuY29sd3d2ZnBiZ3Jpam16Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDA1NDQ3NiwiZXhwIjoyMDg5NjMwNDc2fQ.-zxiZvVwUpyMbiFpRkTZdXdhkMWUHPoFirkamEjRNGY";
 

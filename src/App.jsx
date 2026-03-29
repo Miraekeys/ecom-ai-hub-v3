@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 const SUPABASE_URL = "https://vbgancolwwvfpbgrijmz.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZiZ2FuY29sd3d2ZnBiZ3Jpam16Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDA1NDQ3NiwiZXhwIjoyMDg5NjMwNDc2fQ.-zxiZvVwUpyMbiFpRkTZdXdhkMWUHPoFirkamEjRNGY";
 
-
 // ============================================================
 // CONFIGURATION — AGENTS ET COULEURS
 // ============================================================
@@ -99,16 +98,36 @@ export default function App() {
   };
   const closeChat = (agent) => setOpenChats(prev => prev.filter(a => a !== agent));
 
-  const sendMessage = async (agent) => {
-    const msg = chatInputs[agent]?.trim();
+  const WEBHOOKS = {
+    "Script YouTube": "8ef6e565-4d52-47ce-ae4b-26c5f679998c",
+    "CMO": "867d9d3c-0f7a-43b7-bc97-faf7e958119a",
+    "Chef de Projet": "4b896da9-ad76-43e2-8961-7efcd4b6efac",
+    "UX Produit": "54a08eea-be14-415c-9a05-f53ab66e5490",
+    "Veille": "33d10308-a3c0-4aa1-9367-31759a073e26",
+    "Logistique": "eb5b66aa-ecbf-49f9-9715-89fa25ac322a",
+    "Monitoring": "91201aa8-86d1-49b9-bbce-cad66c23f3b0",
+    "Gardien": "b2f30187-5665-4c57-995a-f0073320e26f"
+  };
+  const sendMessage = async (agent, customMsg) => {
+    const msg = customMsg || chatInputs[agent]?.trim();
     if (!msg) return;
-    setChatMessages(prev => ({ ...prev, [agent]: [...(prev[agent] || []), { role: "user", content: msg, time: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) }] }));
+    const time = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    setChatMessages(prev => ({ ...prev, [agent]: [...(prev[agent] || []), { role: "user", content: msg, time }] }));
     setChatInputs(prev => ({ ...prev, [agent]: "" }));
     setIsLoading(prev => ({ ...prev, [agent]: true }));
-    setTimeout(() => {
-      setChatMessages(prev => ({ ...prev, [agent]: [...(prev[agent] || []), { role: "agent", agent, content: `[${AGENTS[agent].emoji} ${agent}] Connecte le webhook http://178.104.84.46:5678/webhook/UUID pour recevoir ma vraie réponse sur : "${msg}"`, time: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) }] }));
-      setIsLoading(prev => ({ ...prev, [agent]: false }));
-    }, 1200);
+    const uuid = WEBHOOKS[agent];
+    try {
+      const r = await fetch('http://178.104.84.46:5678/webhook/' + uuid, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: msg })
+      });
+      const text = await r.text();
+      setChatMessages(prev => ({ ...prev, [agent]: [...(prev[agent] || []), { role: "agent", agent, content: text || 'Réponse vide', time: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) }] }));
+    } catch(e) {
+      setChatMessages(prev => ({ ...prev, [agent]: [...(prev[agent] || []), { role: "agent", agent, content: 'Erreur de connexion au serveur Hetzner', time: new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) }] }));
+    }
+    setIsLoading(prev => ({ ...prev, [agent]: false }));
   };
 
   const tagAgent = (agent, videoId) => {
@@ -209,8 +228,8 @@ export default function App() {
     );
   };
 
-  const ChatWindow = ({ agent }) => {
-    const chatInputRef = useRef(null);
+  const ChatWindow = React.memo(({ agent }) => {
+    const inputRef = useRef(null);
     const a = AGENTS[agent];
     const messages = chatMessages[agent] || [];
     const endRef = useRef(null);
@@ -237,8 +256,8 @@ export default function App() {
           <div ref={endRef} />
         </div>
         <div style={{ padding: "8px 10px", borderTop: "1px solid #F3F4F6", display: "flex", gap: "6px" }}>
-          <input ref={chatInputRef} defaultValue="" onKeyDown={e => { if(e.key === "Enter" && e.target.value.trim()) { const v=e.target.value.trim(); setChatInputs(prev => ({...prev, [agent]: v})); setTimeout(()=>sendMessage(agent), 0); e.target.value=""; }}} placeholder="Message..." style={{ flex: 1, padding: "7px 11px", borderRadius: "16px", border: `1px solid ${a.color}30`, fontSize: "13px", outline: "none", background: a.bg }} />
-          <button onClick={() => { const val=chatInputRef.current?.value?.trim(); if(val) { setChatInputs(prev => ({...prev, [agent]: val})); setTimeout(()=>sendMessage(agent), 0); chatInputRef.current.value=""; }}} style={{ width: "32px", height: "32px", borderRadius: "50%", background: a.color, border: "none", color: "white", cursor: "pointer", fontSize: "14px" }}>→</button>
+          <input ref={inputRef} onKeyDown={e => { if(e.key === "Enter" && inputRef.current?.value?.trim()) { sendMessage(agent, inputRef.current.value.trim()); inputRef.current.value = ""; } }} placeholder="Message..." style={{ flex: 1, padding: "7px 11px", borderRadius: "16px", border: `1px solid ${a.color}30`, fontSize: "13px", outline: "none", background: a.bg }} />
+          <button onClick={() => { if(inputRef.current?.value?.trim()) { sendMessage(agent, inputRef.current.value.trim()); inputRef.current.value = ""; } }} style={{ width: "32px", height: "32px", borderRadius: "50%", background: a.color, border: "none", color: "white", cursor: "pointer", fontSize: "14px" }}>→</button>
         </div>
       </div>
     );
@@ -366,6 +385,8 @@ export default function App() {
       </div>
     </div>
   );
+
+  });
 
   const AgentProfileView = ({ agent }) => {
     const a = AGENTS[agent];
@@ -553,7 +574,7 @@ export default function App() {
             <input value={newUrl} onChange={e => setNewUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." style={{ width: "100%", padding: "10px 14px", borderRadius: "9px", border: "1px solid #E0D8CC", fontSize: "13px", outline: "none", marginBottom: "12px" }} />
             <div style={{ display: "flex", gap: "8px" }}>
               <button onClick={() => { setAddUrlModal(false); setNewUrl(""); }} style={{ flex: 1, padding: "9px", background: "#F5F5F5", border: "none", borderRadius: "9px", cursor: "pointer", fontSize: "13px" }}>Annuler</button>
-              <button onClick={() => { fetch("http://178.104.84.46:5678/webhook/b2f30187-5665-4c57-995a-f0073320e26f", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({url:newUrl, question:"Analyse cette vidéo"})}).then(()=>alert("Vidéo envoyée !")).catch(()=>alert("Erreur serveur")); setAddUrlModal(false); setNewUrl(""); }} style={{ flex: 2, padding: "9px", background: "#FF6B35", color: "white", border: "none", borderRadius: "9px", cursor: "pointer", fontSize: "13px", fontWeight: "700" }}>Ingérer cette vidéo</button>
+              <button onClick={() => { fetch("http://178.104.84.46:5678/webhook/b2f30187-5665-4c57-995a-f0073320e26f", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:newUrl,question:"Analyse cette vidéo"})}).then(()=>alert("Vidéo envoyée ! Disponible dans 30-60 min.")).catch(()=>alert("Erreur serveur")); setAddUrlModal(false); setNewUrl(""); }} style={{ flex: 2, padding: "9px", background: "#FF6B35", color: "white", border: "none", borderRadius: "9px", cursor: "pointer", fontSize: "13px", fontWeight: "700" }}>Ingérer cette vidéo</button>
             </div>
           </div>
         </div>

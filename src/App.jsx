@@ -553,7 +553,7 @@ export default function App() {
             <input value={newUrl} onChange={e => setNewUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." style={{ width: "100%", padding: "10px 14px", borderRadius: "9px", border: "1px solid #E0D8CC", fontSize: "13px", outline: "none", marginBottom: "12px" }} />
             <div style={{ display: "flex", gap: "8px" }}>
               <button onClick={() => { setAddUrlModal(false); setNewUrl(""); }} style={{ flex: 1, padding: "9px", background: "#F5F5F5", border: "none", borderRadius: "9px", cursor: "pointer", fontSize: "13px" }}>Annuler</button>
-              <button onClick={() => { alert("Webhook à connecter : http://178.104.84.46:5678/webhook/UUID\n\nURL : " + newUrl); setAddUrlModal(false); setNewUrl(""); }} style={{ flex: 2, padding: "9px", background: "#FF6B35", color: "white", border: "none", borderRadius: "9px", cursor: "pointer", fontSize: "13px", fontWeight: "700" }}>Ingérer cette vidéo</button>
+              <button onClick={() => { fetch("http://178.104.84.46:5678/webhook/b2f30187-5665-4c57-995a-f0073320e26f", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({url:newUrl, question:"Analyse cette vidéo"})}).then(()=>alert("Vidéo envoyée !")).catch(()=>alert("Erreur serveur")); setAddUrlModal(false); setNewUrl(""); }} style={{ flex: 2, padding: "9px", background: "#FF6B35", color: "white", border: "none", borderRadius: "9px", cursor: "pointer", fontSize: "13px", fontWeight: "700" }}>Ingérer cette vidéo</button>
             </div>
           </div>
         </div>
